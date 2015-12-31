@@ -1,0 +1,5 @@
+PLL_Name	tPad_Starter_SOPC:tPad_Starter_inst|altpll:the_altpll|altpll_altpll_hfu2:sd1|pll7
+PLLJITTER	41
+PLLSPEmax	84
+PLLSPEmin	-53
+

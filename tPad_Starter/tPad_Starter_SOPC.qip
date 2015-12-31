@@ -1,0 +1,17 @@
+set_global_assignment -name SDC_FILE [file join $::quartus(qip_path) cpu.sdc]
+set_global_assignment -name TCL_FILE [file join $::quartus(qip_path) ip/TERASIC_VGA/VGA_SINK_hw.tcl]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ip/TERASIC_IRM/irda_receive_terasic.v]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ip/TERASIC_VGA/VGA_SINK.v]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) altpll.v]
+set_global_assignment -name SDC_FILE [file join $::quartus(ip_rootpath) altera/sopc_builder_ip/altera_avalon_clock_adapter/altera_avalon_clock_adapter.sdc]
+set_global_assignment -name TCL_FILE [file join $::quartus(qip_path) ip/TERASIC_IRM/TERASIC_IRM_hw.tcl]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) vga.v]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ip/TERASIC_IRM/TERASIC_IRM.v]
+set_global_assignment -name TCL_FILE [file join $::quartus(ip_rootpath) altera/sopc_builder_ip/altera_avalon_pixel_converter/altera_avalon_pixel_converter_hw.tcl]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(ip_rootpath) altera/sopc_builder_ip/altera_avalon_pixel_converter/altera_avalon_pixel_converter.v]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) irm.v]
+set_global_assignment -name SOURCE_FILE [file join $::quartus(qip_path) cpu.ocp]
+set_global_assignment -name TCL_FILE [file join $::quartus(ip_rootpath) altera/sopc_builder_ip/altera_avalon_altpll/altera_avalon_altpll_hw.tcl]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) lcd_pixel_converter.v]
+set_global_assignment -name SOPC_BUILDER_SIGNATURE_ID E0CB4EC816750000012AF12CC966 
+ 
