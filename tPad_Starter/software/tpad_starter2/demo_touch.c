@@ -33,17 +33,19 @@ struct node {
 }; 
 typedef struct node Node; 
 
+//GLOBAL VARIABLES
 OS_STK s1[2048];
 OS_STK s2[2048];
 Balls_struct Balls[N][N];
 Node* sTouchedTop;
+int ballColors[4];
 
 //functions for touched balls stack
-Node* creates(void);         // «Ø¥ß°ïÅ| 
-int isEmpty(Node*);           // °ïÅ|¤wªÅ 
-Node* add(Node*, int, int);   // ·s¼W¤¸¯À 
-Node* delete(Node*);     // §R°£¤¸¯À 
-void list(Node*);      // Åã¥Ü©Ò¦³¤º®e 
+Node* creates(void);         // å»ºç«‹å †ç–Š 
+int isEmpty(Node*);           // å †ç–Šå·²ç©º 
+Node* add(Node*, int, int);   // æ–°å¢žå…ƒç´  
+Node* delete(Node*);     // åˆªé™¤å…ƒç´  
+void list(Node*);      // é¡¯ç¤ºæ‰€æœ‰å…§å®¹ 
 
 void detectLCD(void *p) {
     alt_video_display* display=((ptaskD)p)->display;
@@ -51,23 +53,40 @@ void detectLCD(void *p) {
     alt_touchscreen_scaled_pen_data pen_data;
     int xt;
     int yt;
-	int firstTouched;
+    int lastColor;
+    int lastXt;
+    int lastYt;
   while(1){
             alt_touchscreen_get_pen(screen, (&pen_data.pen_down), (&pen_data.x), (&pen_data.y));
-            if (pen_data.pen_down==0)
+            if (pen_data.pen_down!=0)
             {
               xt=(pen_data.x-150)/100;
               yt=(pen_data.y-50)/100;
               printf("x=%d,y=%d\n",xt,yt);
-			  Balls[yt][xt].touched=1;
-			  if(isEmpty(sTouchedTop)==0){
-				  sTouchedTop=add(sTouchedTop,xt,yt);
-				  //!draw line
-			  }
-			  else{
-				  sTouchedTop=add(sTouchedTop,xt,yt);
-			  }
-			  
+              
+              lastXt=sTouchedTop->x;
+              lastYt=sTouchedTop->y;
+              lastColor=Balls[lastYt][lastXt].colorIndex;
+
+    			  Balls[yt][xt].touched=1;
+                  //draw lines to connect the balls if stack isn't empty
+    			  if(isEmpty(sTouchedTop)==0){
+                        //check if the new touched ball is of the same color as last ball
+                        //also the balls have to be next to each other
+                        if(lastColor==Balls[yt][xt].colorIndex&&((lastXt==xt)||(lastYt==yt))){
+                          display->buffer_being_written=0;
+                          sTouchedTop=add(sTouchedTop,xt,yt);
+                          //draw the line
+            			  vid_draw_line(200+100*lastXt,100*(lastYt+1),200+100*xt,100*(yt+1),2,ballColors[lastColor],display);  
+                          // update canvas
+                          alt_video_display_register_written_buffer( display );
+                          while(alt_video_display_buffer_is_available(display) != 0);
+                        }
+    			  }
+    			  else{
+    				  sTouchedTop=add(sTouchedTop,xt,yt);
+    			  }
+                  list(sTouchedTop);
               
             }
            // printf("in detect LCD\n");
@@ -122,12 +141,10 @@ void demo_touch( alt_video_display* display, alt_touchscreen* screen, bool bLimi
     //START!!
     alt_video_display_clear_screen( display, 0x0 );//clean canvas as black
     // balls initialize
-    int color[4];
-    color[0]=PINK_24;//   0xFFC0CB 
-    color[1]=0xffdd33;//    yellow
-    color[2]=LIGHTGREEN_24;//   0x90EE90
-    color[3]=LIGHTSKYBLUE_24;//   0x87CEFA 
-	
+    ballColors[0]=PINK_24;//   0xFFC0CB 
+    ballColors[1]=0xffdd33;//    yellow
+    ballColors[2]=LIGHTGREEN_24;//   0x90EE90
+    ballColors[3]=LIGHTSKYBLUE_24;//   0x87CEFA 
     int colorIndex;
     int i,j;
     for(i=0;i<N;i++){
@@ -135,8 +152,8 @@ void demo_touch( alt_video_display* display, alt_touchscreen* screen, bool bLimi
                colorIndex=rand()%4;
                Balls[j][i].colorIndex=colorIndex;
                Balls[j][i].touched=0;
-               vid_draw_circle(200+100*i,100*(j+1),20, color[colorIndex],TRUE,display);
-               //printf("(%d,%d)--color:%x\n",i,j,color[colorIndex]);
+               vid_draw_circle(200+100*i,100*(j+1),20, ballColors[colorIndex],TRUE,display);
+               //printf("(%d,%d)--color:%x\n",i,j,ballColors[colorIndex]);
            }
      } 
     for(j=0;j<N;j++){
@@ -410,7 +427,7 @@ Node* add(Node* top, int xitem, int yitem) {
     newnode = (Node*) malloc(sizeof(Node)); 
 
     if(newnode == NULL) { 
-        printf("\n°O¾ÐÅé°t¸m¥¢±Ñ¡I"); 
+        printf("\nè¨˜æ†¶é«”é…ç½®å¤±æ•—ï¼"); 
         exit(1); 
     } 
 
@@ -427,7 +444,7 @@ Node* delete(Node* top) {
 
     tmpnode = top; 
     if(tmpnode == NULL) { 
-        printf("\n°ïÅ|¤wªÅ¡I"); 
+        printf("\nå †ç–Šå·²ç©ºï¼"); 
         return NULL; 
     } 
 
@@ -438,12 +455,14 @@ Node* delete(Node* top) {
 } 
 
 void list(Node* top) { 
-    getnode* tmpnode; 
+    Node* tmpnode; 
     tmpnode = top; 
 
-    printf("\n°ïÅ|¤º®e¡G"); 
+    printf("\nå †ç–Šå…§å®¹ï¼š"); 
     while(tmpnode != NULL) { 
         printf("%d %d ->", tmpnode->x, tmpnode->y); 
         tmpnode = tmpnode->next; 
-    } 
+    }
+    printf("\n"); 
 }
+
